@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Moodle Downloader</title>
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><img class="brand-icon" src="/logo.png" alt="" width="44" height="44"><span>Moodle<br><strong>Downloader</strong></span></div>
+      <nav aria-label="Navegación">
+        <button class="nav-button current" data-view="library" aria-current="page"><span class="icon icon-grid" aria-hidden="true"></span>Cursos</button>
+        <button class="nav-button" data-view="activity"><span class="icon icon-clock" aria-hidden="true"></span>Actividad</button>
+      </nav>
+      <div class="session-panel">
+        <div class="session-line"><span id="session-dot" class="dot"></span><strong id="session-label">Sin conexión</strong></div>
+        <span id="session-host" class="session-host">Tu aula virtual</span>
+        <button id="disconnect" class="plain-light" type="button" hidden>Desconectar</button>
+      </div>
+    </aside>
+
+    <main class="workspace" id="workspace">
+      <header class="topbar">
+        <div id="page-label" class="page-label">Cursos</div>
+        <button id="change-session" class="quiet" type="button" hidden><span class="icon icon-link" aria-hidden="true"></span>Cambiar sesión</button>
+      </header>
+
+      <section id="library" aria-label="Cursos">
+        <section class="hero">
+          <div class="hero-copy">
+            <h1 id="hero-title">Tu aula virtual,<br>también sin conexión.</h1>
+            <p id="hero-subtitle">Guarda los materiales de Moodle en tu PC.</p>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="orbit orbit-outer"></div><div class="orbit orbit-inner"></div>
+            <div class="art-spark spark-one"></div><div class="art-spark spark-two"></div>
+            <div class="art-file file-back"></div><div class="art-file file-front"><i></i><i></i><i></i></div>
+            <div class="art-folder"></div><span class="art-download icon icon-download"></span>
+          </div>
+        </section>
+
+        <div id="connection" class="connection-grid">
+          <section class="panel connect-panel">
+            <h2>Conecta tu aula</h2>
+            <form id="connect-form">
+              <label for="address">Dirección de Moodle</label>
+              <input id="address" type="text" spellcheck="false" autocomplete="off" required value="https://aulavirtual.itla.edu.do">
+              <label for="cookie">MoodleSession</label>
+              <div class="secret-field">
+                <input id="cookie" type="password" placeholder="Pega el valor de la cookie" autocomplete="off" spellcheck="false" required>
+                <button id="toggle-cookie" class="secret-toggle" type="button" aria-pressed="false">Mostrar</button>
+              </div>
+              <div class="form-actions">
+                <button id="connect" class="primary" type="submit"><span class="icon icon-link" aria-hidden="true"></span>Conectar y ver cursos</button>
+                <button id="cancel-connect" class="quiet" type="button" hidden>Cancelar</button>
+                <button id="return-library" class="quiet" type="button" hidden>Volver a los cursos</button>
+              </div>
+            </form>
+            <p id="connection-error" class="inline-error" role="alert" hidden></p>
+          </section>
+          <section class="panel help-panel">
+            <div class="help-mark icon icon-key" aria-hidden="true"></div>
+            <h2>Dónde encontrar la cookie</h2>
+            <ol>
+              <li>Inicia sesión en Moodle en tu navegador.</li>
+              <li>Presiona <kbd>F12</kbd> y abre <strong>Aplicación → Cookies</strong>.</li>
+              <li>Selecciona el sitio de Moodle y copia el valor de <strong>MoodleSession</strong>.</li>
+            </ol>
+            <p class="privacy-note">La cookie se usa en memoria durante la sesión.</p>
+          </section>
+        </div>
+
+        <div id="catalog" hidden>
+          <section class="panel destination-panel">
+            <div>
+              <label for="target">Carpeta de descargas</label>
+              <div class="destination-input"><span class="icon icon-folder" aria-hidden="true"></span><input id="target" placeholder="Selecciona una carpeta" spellcheck="false"></div>
+            </div>
+            <div class="destination-actions">
+              <button id="choose-folder" class="secondary" type="button">Elegir carpeta</button>
+              <button id="open-folder" class="quiet" type="button">Abrir</button>
+            </div>
+          </section>
+          <p id="catalog-warning" class="inline-warning" hidden></p>
+          <div class="library-layout">
+            <section class="panel course-panel" aria-labelledby="courses-title">
+              <div class="panel-heading"><h2 id="courses-title">Mis cursos</h2><span id="course-count" class="count"></span></div>
+              <label for="search" class="sr-only">Buscar cursos</label>
+              <input id="search" type="search" placeholder="Buscar cursos">
+              <div class="course-actions">
+                <label class="checkbox-label"><input id="select-visible" type="checkbox"> Seleccionar visibles</label>
+                <span id="selection-count" class="muted"></span>
+              </div>
+              <div id="course-list" class="course-list"></div>
+              <button id="download-selection" class="primary wide-button" type="button" disabled><span class="icon icon-download" aria-hidden="true"></span>Descargar selección</button>
+            </section>
+            <section id="detail" class="panel detail-panel" aria-label="Detalle del curso"></section>
+          </div>
+        </div>
+      </section>
+
+      <section id="activity" hidden aria-label="Actividad">
+        <div class="activity-heading">
+          <div><h1>Actividad</h1><p>Consulta el progreso y el resultado de tus descargas.</p></div>
+          <button id="activity-open-folder" class="secondary" type="button">Abrir carpeta</button>
+        </div>
+        <div id="activity-metrics" class="metrics">
+          <div class="panel metric"><strong id="metric-saved">0</strong><span>Guardados</span></div>
+          <div class="panel metric"><strong id="metric-existing">0</strong><span>Ya estaban guardados</span></div>
+          <div class="panel metric"><strong id="metric-errors">0</strong><span>Incidencias</span></div>
+        </div>
+        <section class="panel activity-panel" aria-label="Registro de descargas">
+          <div class="panel-heading"><h2>Registro</h2><button id="clear-log" class="quiet" type="button">Limpiar registro</button></div>
+          <div id="activity-log" class="activity-log"></div>
+        </section>
+      </section>
+      <div id="notice" class="notice" role="status" hidden></div>
+    </main>
+    <footer id="job-bar" class="job-bar" hidden>
+      <span id="job-indicator" class="job-indicator"></span>
+      <div class="job-info"><strong id="job-title">Preparando descarga</strong><span id="job-detail" role="status"></span></div>
+      <button id="job-activity" class="quiet" type="button">Ver actividad</button>
+      <button id="cancel-job" class="secondary" type="button">Cancelar</button>
+      <button id="dismiss-job" class="quiet" type="button" hidden>Cerrar</button>
+    </footer>
+  </div>
+</body>
+</html>

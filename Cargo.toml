@@ -1,0 +1,30 @@
+[package]
+name = "moodle-downloader"
+version = "1.0.1"
+edition = "2024"
+description = "Respaldo de materiales de Moodle para Windows"
+
+[dependencies]
+anyhow = "1"
+dom_query = "0.29"
+encoding_rs = "0.8"
+percent-encoding = "2.3"
+regex = "1"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+rfd = { version = "0.15", default-features = false }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+tao = "0.37"
+tokio = { version = "1", features = ["rt", "sync", "time", "macros"] }
+url = { version = "2", features = ["serde"] }
+uuid = { version = "1", features = ["v4"] }
+windows-sys = { version = "0.61", features = ["Win32_Storage_FileSystem", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging"] }
+wry = { version = "0.57", default-features = false, features = ["os-webview"] }
+
+[build-dependencies]
+embed-resource = "3"
+
+[profile.release]
+lto = "thin"
+strip = true
